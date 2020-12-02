@@ -6,11 +6,12 @@ const sha1 = require('sha1')
 const create = async (req, res) => {
     const {button, username, email, password, number, verify} = req.body
     try {
-
+        
         if(button && username && password && email && number && verify) {
-            const [ newUser ] = await query(`insert into users (user_username, user_phone, user_password, user_email ) values ($1, $2, $3, $4) returning *`,
-            username, `+998${number}`, sha1(password), email)
-            res.json({data: newUser, status: 201, message: 'Creating...', error: null, access_token: sign(newUser, JWTKEY)})
+            // const [ newUser ] = await query(`insert into users (user_username, user_phone, user_password, user_email ) values ($1, $2, $3, $4) returning *`,
+            // username, `+998${number}`, sha1(password), email)
+            // res.json({data: newUser, status: 201, message: 'Creating...', error: null, access_token: sign(newUser, JWTKEY)})
+            res.json({data: true})
         }
 
         else if (username && password && email && number && verify) {
