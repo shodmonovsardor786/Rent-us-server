@@ -4,19 +4,17 @@ const JWTKEY = 'secretkey'
 const sha1 = require('sha1')
 
 const create = async (req, res) => {
-    const {button, username, email, password, number, verify} = req.body
+    const {username, email, password, number, verify} = req.body
     try {
-        
-        if(button && username && password && email && number && verify) {
-            // const [ newUser ] = await query(`insert into users (user_username, user_phone, user_password, user_email ) values ($1, $2, $3, $4) returning *`,
-            // username, `+998${number}`, sha1(password), email)
-            // res.json({data: newUser, status: 201, message: 'Creating...', error: null, access_token: sign(newUser, JWTKEY)})
-            res.json({data: true})
-        }
-
-        else if (username && password && email && number && verify) {
-            console.log(verify)
-            res.json({data: true, message: 'True code'})
+        if (verify) {
+            if(verify  === '123456') {
+                // const [ newUser ] = await query(`insert into users (user_username, user_phone, user_password, user_email ) values ($1, $2, $3, $4) returning *`,
+                // username, `+998${number}`, sha1(password), email)
+                res.json({data: true, status: 201, message: 'Creating...', error: null, access_token: sign(true, JWTKEY)})
+            }
+            else {
+                throw new Error ('Wrong verify code')
+            }
         }
 
         else if (username && password && email && number) {
@@ -81,14 +79,6 @@ const create = async (req, res) => {
             }
         }
 
-        else if(verify) {
-            if(verify  === '123456') {
-                res.json({data: true})
-            }
-            else {
-                res.json({data: false})
-            }
-        }
     }
     catch (error) {
         res.json({data: null, states: 404, message: error.message})
