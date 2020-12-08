@@ -16,7 +16,8 @@ create table users (
     user_username character varying(64) not null,
     user_email character varying(128) not null,
     user_phone character varying(24) not null,
-    user_password character varying(64) not null
+    user_password character varying(64) not null,
+    verify character varying(64) not null
 );
 
 create table classifieds (

@@ -2,51 +2,58 @@ const { sign } = require('jsonwebtoken')
 const { query } = require("../pool")	
 const JWTKEY = 'secretkey'
 const sha1 = require('sha1')
+const nodemailer = require('nodemailer')
+const randomize = require('randomatic')
 
 const create = async (req, res) => {
     const {username, email, password, number, verify} = req.body
     try {
-        if (verify) {
-            if(verify  === '123456') {
-                // const [ newUser ] = await query(`insert into users (user_username, user_phone, user_password, user_email ) values ($1, $2, $3, $4) returning *`,
-                // username, `+998${number}`, sha1(password), email)
-                res.json({data: true, status: 201, message: 'Creating...', error: null, access_token: sign(true, JWTKEY)})
+
+        if (verify && username) {
+            const [ user ] = await query(`select * from users where verify = $1`, sha1(verify))
+            if(user) {
+                res.json({data: true, status: 201, message: 'Creating...', error: null, access_token: sign(user, JWTKEY)})
             }
             else {
-                throw new Error ('Wrong verify code')
+                throw new Error ('wrong verify code')
             }
         }
-
+        
         else if (username && password && email && number) {
-
-            res.json({data: true, message: "Verify code send your email"})
-
-            // const transporter = nodemailer.createTransport({
-            //     service: 'gmail',
-			// 		auth: {
-            //             user: 'shodmonovsardor766@gmail.com',
-			// 			pass: 'sardor786'
-			// 		}
-			// 	})
-			// 	const mailOption = {
-			// 		from: 'shodmonovsardor766@gmail.com',
-			// 		to: email,
-			// 		subject: `Hello ${username}`,
-			// 		html: `
-			// 		<div style="background: #eee; margin: 10px; padding: 10px; border-radius: 10px">
-			// 			<h1 style="margin: 0; padding: 0">Your verify code ${randomNumber} 😉</h1> 
-			// 		</div>
-			// 		`
-			// 	}
-			//  	transporter.sendMail(mailOption, (error, info) => {
-			// 		if(error) {
-			// 			console.log(error.message)
-			// 		}
-			// 		else {
-			// 			res.json({data: true, message: 'Verify code send your email'})
-			// 			console.log('Email send ' + info.response);
-			// 		}
-			// 	})
+            try {
+                const random = randomize('0', 6)
+                const [ newUser ] = await query(`insert into users (user_username, user_phone, user_password, user_email, verify) 
+                values ($1, $2, $3, $4, $5) returning *`,  username, `+998${number}`, sha1(password), email, sha1(random))
+                const transporter = nodemailer.createTransport({
+                    service: 'gmail',
+                        auth: {
+                            user: 'shodmonovsardor766@gmail.com',
+                            pass: 'sardor786'
+                        }
+                    })
+                    const mailOption = {
+                        from: 'shodmonovsardor766@gmail.com',
+                        to: email,
+                        subject: `Hello ${username}`,
+                        html: `
+                        <div style="background: #eee; margin: 10px; padding: 10px; border-radius: 10px">
+                        <h1 style="margin: 0; padding: 0">Your verify code ${random} 😉</h1> 
+                        </div>
+                        `
+                    }
+                    transporter.sendMail(mailOption, (error, info) => {
+                        if(error) {
+                            console.log(error.message)
+                        }
+                        else {
+                            res.json({data: newUser, message: 'Verify code send your email'})
+                            console.log('Email send ' + info.response);
+                        }
+                    })
+            } 
+            catch (error) {
+                console.log(error)
+            }
         }
 
         else if(username) {
