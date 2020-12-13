@@ -6,11 +6,16 @@ const nodemailer = require('nodemailer')
 const randomize = require('randomatic')
 
 const create = async (req, res) => {
-    const {username, email, password, number, verify} = req.body
+    const {username, email, password, number, verify, deleteUser} = req.body
     try {
 
-        if (verify && username) {
-            const [ user ] = await query(`select * from users where verify = $1`, sha1(verify))
+        if(deleteUser) {
+            const [ user ] = await query(`delete from users where user_username = $1 returning *`, deleteUser)
+            res.json({data: user})
+        }
+        
+        else if (verify && username) {
+            const [ user ] = await query(`select * from users where verify = $1`, verify)
             if(user) {
                 res.json({data: true, status: 201, message: 'Creating...', error: null, access_token: sign(user, JWTKEY)})
             }
@@ -23,7 +28,7 @@ const create = async (req, res) => {
             try {
                 const random = randomize('0', 6)
                 const [ newUser ] = await query(`insert into users (user_username, user_phone, user_password, user_email, verify) 
-                values ($1, $2, $3, $4, $5) returning *`,  username, `+998${number}`, sha1(password), email, sha1(random))
+                values ($1, $2, $3, $4, $5) returning *`,  username, `+998${number}`, sha1(password), email, random)
                 const transporter = nodemailer.createTransport({
                     service: 'gmail',
                         auth: {
