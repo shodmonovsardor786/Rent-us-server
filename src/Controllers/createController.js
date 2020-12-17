@@ -6,18 +6,16 @@ const nodemailer = require('nodemailer')
 const randomize = require('randomatic')
 
 const create = async (req, res) => {
-    const {username, email, password, number, verify, deleteUser} = req.body
+    const {username, email, password, number, verify} = req.body
     try {
 
-        if(deleteUser) {
-            const [ user ] = await query(`delete from users where user_username = $1 returning *`, deleteUser)
-            res.json({data: user})
-        }
-        
-        else if (verify && username) {
-            const [ user ] = await query(`select * from users where verify = $1`, verify)
-            if(user) {
-                res.json({data: true, status: 201, message: 'Creating...', error: null, access_token: sign(user, JWTKEY)})
+        if (verify && username && email && password && number) {
+            const [ code ] = await query(`select * from verify where code = $1`, verify)
+            if(code) {
+                const [ newUser ] = await query(`insert into users (user_username, user_email, user_phone, user_password) 
+                values ($1, $2, $3, $4) returning *`, username, email, `+998 ${number}`, sha1(password))
+                await query(`delete from verify where code = $1`, code.code)
+                res.json({data: true, status: 201, message: 'Creating...', error: null, access_token: sign(newUser, JWTKEY)})
             }
             else {
                 throw new Error ('wrong verify code')
@@ -27,8 +25,8 @@ const create = async (req, res) => {
         else if (username && password && email && number) {
             try {
                 const random = randomize('0', 6)
-                const [ newUser ] = await query(`insert into users (user_username, user_phone, user_password, user_email, verify) 
-                values ($1, $2, $3, $4, $5) returning *`,  username, `+998${number}`, sha1(password), email, random)
+                const [ newCode ] = await query(`insert into verify (code) values ($1) returning code`, random)
+
                 const transporter = nodemailer.createTransport({
                     service: 'gmail',
                         auth: {
@@ -42,7 +40,7 @@ const create = async (req, res) => {
                         subject: `Hello ${username}`,
                         html: `
                         <div style="background: #eee; margin: 10px; padding: 10px; border-radius: 10px">
-                        <h1 style="margin: 0; padding: 0">Your verify code ${random} 😉</h1> 
+                        <h1 style="margin: 0; padding: 0">Your verify code ${newCode.code} 😉</h1> 
                         </div>
                         `
                     }

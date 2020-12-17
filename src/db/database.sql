@@ -16,8 +16,7 @@ create table users (
     user_username character varying(64) not null,
     user_email character varying(128) not null,
     user_phone character varying(24) not null,
-    user_password character varying(64) not null,
-    verify character varying(64) not null
+    user_password character varying(64) not null
 );
 
 create table classifieds (
@@ -50,6 +49,9 @@ create table comments (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+create table verify (
+    code character varying(18)
+);
 
 insert into regions (region_name) values ('Toshkent sh.');
 insert into regions (region_name) values ('Toshkent vil.');
