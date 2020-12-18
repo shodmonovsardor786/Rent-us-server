@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/server",
+    "start": "node src/server",
+    "start-dev": "nodemon src/server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -22,6 +23,7 @@
     "pg": "^8.5.1",
     "randomatic": "^3.1.1",
     "sha1": "^1.1.1",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.3.0",
+    "start-dev": "^1.0.0"
   }
 }
