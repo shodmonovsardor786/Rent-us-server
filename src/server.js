@@ -3,7 +3,7 @@ const app = express()
 const cors = require('cors')
 const fileUpload = require('express-fileupload')
 
-const PORT = process.env.PORT || 4001
+const PORT = process.env.PORT || 4000
 const http = require('http')
 const server = http.createServer(app)
 const io = require('socket.io').listen(server)
