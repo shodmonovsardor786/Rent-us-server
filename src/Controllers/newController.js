@@ -45,7 +45,7 @@ const postNew = async (req, res) => {
             classified.addres, 
             classified.body
             )
-        const images = classified.images.map(img => (
+        classified.images.map(img => (
             img ? query(`insert into images(classified_id, image_path) values($1, $2)`, NewClassified.classified_id, img) : null
         ))
         res.json({data: NewClassified})
