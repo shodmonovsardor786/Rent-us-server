@@ -15,7 +15,7 @@ app.use(express.json())
 app.use(cors())
 
 app.get('/favicon.ico', (_, res) => {
-    res.send(null)
+    res.send('')
 })
 
 app.get('/', (_, res) => {

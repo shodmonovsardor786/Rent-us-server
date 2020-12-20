@@ -10,10 +10,8 @@ app.use(express.json())
 const getHome = async (_, res) => {
 	try {
 		const regions = await query(`select * from regions`)
-		const districts = await query(`select * from districts`)
 		const images = await query(`select * from images`)
-		const comments = await query(`select comment_id, user_username, classified_id, comment_body from comments natural join users order by comment_id desc`)
-		res.json({comments, regions, districts, images})
+		res.json({regions, images})
 		
 	} catch (error) {
 		console.log(error.message)
