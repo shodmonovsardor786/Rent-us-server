@@ -50,4 +50,8 @@ const { getAccount, postAccount } = require('./Controllers/accountController')
 app.get('/account', getAccount)
 app.post('/account', postAccount)
 
+const { getSettings, postSettings } = require('./Controllers/settingsController')
+app.get('/account/settings', getSettings)
+app.post('/account/settings', postSettings)
+
 server.listen(PORT, () => console.log(`server ready with ${PORT} port`))

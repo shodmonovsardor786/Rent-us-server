@@ -16,7 +16,8 @@ create table users (
     user_username character varying(64) not null,
     user_email character varying(128) not null,
     user_phone character varying(24) not null,
-    user_password character varying(64) not null
+    user_password character varying(64) not null,
+    user_path character varying(128)
 );
 
 create table classifieds (
@@ -37,6 +38,7 @@ create table classifieds (
 
 create table images (
     classified_id bigserial not null references classifieds(classified_id),
+    user_id bigserial not null references users(user_id),
     image_id bigserial not null primary key,
     image_path character varying(128)
 );
@@ -50,7 +52,7 @@ create table comments (
 );
 
 create table verify (
-    code character varying(18)
+    code character varying(6)
 );
 
 insert into regions (region_name) values ('Toshkent sh.');

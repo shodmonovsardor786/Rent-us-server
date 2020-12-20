@@ -12,8 +12,9 @@ const create = async (req, res) => {
         if (verify && username && email && password && number) {
             const [ code ] = await query(`select * from verify where code = $1`, verify)
             if(code) {
-                const [ newUser ] = await query(`insert into users (user_username, user_email, user_phone, user_password) 
-                values ($1, $2, $3, $4) returning *`, username, email, `+998 ${number}`, sha1(password))
+                const lowerPassword = password.toLowerCase()
+                const [ newUser ] = await query(`insert into users (user_username, user_email, user_phone, user_password, user_path) 
+                values ($1, $2, $3, $4, $5) returning *`, username, email, `+998 ${number}`, sha1(lowerPassword), null)
                 await query(`delete from verify where code = $1`, code.code)
                 res.json({data: true, status: 201, message: 'Creating...', error: null, access_token: sign(newUser, JWTKEY)})
             }
@@ -80,7 +81,7 @@ const create = async (req, res) => {
         }
 
         else if(number) {
-            const [ user ] = await query(`select * from users where user_phone = $1`, `+998${number}`)
+            const [ user ] = await query(`select * from users where user_phone = $1`, `+998 ${number}`)
             if(user) {
                 res.json({data: false})                
             }
