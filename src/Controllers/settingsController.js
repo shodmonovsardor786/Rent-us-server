@@ -7,8 +7,8 @@ const nodemailer = require('nodemailer')
 
 const getSettings = async (req, res) => {
 	try {
+		const { token } = req.headers
 		if(token) {
-			const { token } = req.headers
 			try {
 				const user = verify(token, JWTKEY)
 				if(user) {
