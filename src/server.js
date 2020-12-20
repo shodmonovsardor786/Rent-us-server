@@ -14,9 +14,17 @@ app.use(express.json())
 
 app.use(cors())
 
+app.get('/favicon.ico', (_, res) => {
+    res.send(null)
+})
+
+app.get('/', (_, res) => {
+    res.redirect('/home')
+})
+
 const { getHome, postHome } = require('./Controllers/homeController')
-app.get('/', getHome)
-app.post('/', postHome)
+app.get('/home', getHome)
+app.post('/home', postHome)
 
 const { login } = require('./Controllers/loginController')
 app.post('/login', login)
