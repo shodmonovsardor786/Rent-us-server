@@ -4,9 +4,9 @@ const JWTKEY = 'secretkey'
 const { query } = require("../pool")	
 
 const login = async (req, res) => {
-    const {username, password} = req.body
-    
     try {
+        const {username, password} = req.body
+    
         if(username && password) {
             const [ user ] = await query(`select * from users where lower(user_username) = $1 and user_password = $2`, username.toLowerCase(), sha1(password))
             if(user) {
@@ -14,8 +14,7 @@ const login = async (req, res) => {
             }
             else throw new Error ('Wrong username or password')
         }
-    } 
-    catch (error) {
+    } catch (error) {
         res.json({data: null, states: 404, message: error.message})
     }
 }

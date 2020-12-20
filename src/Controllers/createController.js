@@ -6,15 +6,18 @@ const nodemailer = require('nodemailer')
 const randomize = require('randomatic')
 
 const create = async (req, res) => {
-    const {username, email, password, number, verify} = req.body
     try {
+        const {username, email, password, number, verify} = req.body
 
         if (verify && username && email && password && number) {
             const [ code ] = await query(`select * from verify where code = $1`, verify)
             if(code) {
                 const lowerPassword = password.toLowerCase()
-                const [ newUser ] = await query(`insert into users (user_username, user_email, user_phone, user_password, user_path) 
-                values ($1, $2, $3, $4, $5) returning *`, username, email, `+998 ${number}`, sha1(lowerPassword), null)
+                const [ newUser ] = await query(`
+                insert into users (user_username, user_email, user_phone, user_password, user_path) 
+                values ($1, $2, $3, $4, $5) returning *
+                `, username, email, `+998 ${number}`, sha1(lowerPassword), null)
+                
                 await query(`delete from verify where code = $1`, code.code)
                 res.json({data: true, status: 201, message: 'Creating...', error: null, access_token: sign(newUser, JWTKEY)})
             }
@@ -90,8 +93,7 @@ const create = async (req, res) => {
             }
         }
 
-    }
-    catch (error) {
+    } catch (error) {
         res.json({data: null, states: 404, message: error.message})
     }
 }

@@ -2,8 +2,6 @@ const { verify } = require('jsonwebtoken')
 const { query } = require("../pool")	
 const JWTKEY = 'secretkey'
 
-
-
 const getAccount = async (req, res) => {
     try {
         const { token } = req.headers
@@ -18,8 +16,7 @@ const getAccount = async (req, res) => {
             const images = await query(`select * from images`)
             res.json({data: classifieds, images})
         }
-    }
-    catch (error) {
+    } catch (error) {
         res.json({data: null, error: error.message})
     }
 }

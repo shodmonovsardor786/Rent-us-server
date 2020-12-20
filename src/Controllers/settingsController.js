@@ -6,25 +6,28 @@ const randomize = require('randomatic')
 const nodemailer = require('nodemailer')
 
 const getSettings = async (req, res) => {
-    const { token } = req.headers
-		
-	if(token) {
-		try {
-			const user = verify(token, JWTKEY)
-			if(user) {
-                res.json({data: user})
-            }
-		}
-		catch (error) {
-			res.json({data: null, error: error.message})
-		}
-	}  
+	try {
+		if(token) {
+			const { token } = req.headers
+			try {
+				const user = verify(token, JWTKEY)
+				if(user) {
+					res.json({data: user})
+				}
+			}
+			catch (error) {
+				res.json({data: null, error: error.message})
+			}
+		}  
+	} catch (error) {
+		console.log(error.message)
+	}	
 }
 
 const postSettings = async (req, res) => {
 
-	const { id, username, number, password, newPassword, button, userDel, user, verifyCode } = req.body
 	try {
+		const { id, username, number, password, newPassword, button, userDel, user, verifyCode } = req.body
 
 		if(button) {
 			if(username && number && newPassword ) {
@@ -147,10 +150,7 @@ const postSettings = async (req, res) => {
 				res.json({data: false})
 			}
 		}
-
-
-	} 
-	catch (error) {
+	} catch (error) {
 		console.log(error.message)
 	}
 
