@@ -47,7 +47,7 @@ const postHome = async (req, res) => {
 			`, index)
 			const images = await query(`select * from images where classified_id = $1`, index)
 			const comments = await query(`
-				select * from comments natural join users where classified_id = $1
+				select * from comments natural join users where classified_id = $1 order by created_at desc
 			`, index)
 			res.json({classified, comments, images: images ? images : null})
 		}
