@@ -27,7 +27,7 @@ const getSettings = async (req, res) => {
 const postSettings = async (req, res) => {
 
 	try {
-		const { id, username, number, password, newPassword, button, userDel, user, verifyCode } = req.body
+		const { id, username, number, password, newPassword, button, userDel, user, verifyCode, img } = req.body
 
 		if(button) {
 			if(username && number && newPassword ) {
@@ -51,6 +51,12 @@ const postSettings = async (req, res) => {
 				res.json({data: user, access_token: sign(user, JWTKEY)})
 
 			}
+
+			else if (img) {
+				const  [ user ] = await query(`update users set user_path = $2 where user_id = $1 returning *`, id, img)
+				res.json({data: user, access_token: sign(user, JWTKEY)})
+			}
+
 			else if(username) {
 				const  [ user ] = await query(`update users set user_username = $2 where user_id = $1 returning *`, id, username)
 				res.json({data: user, access_token: sign(user, JWTKEY)})
